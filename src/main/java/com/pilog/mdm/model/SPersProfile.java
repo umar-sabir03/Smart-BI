@@ -1,21 +1,17 @@
 package com.pilog.mdm.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import javax.persistence.*;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Entity
 @Table(name = "S_PERS_PROFILE")
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SPersProfile {
+public class SPersProfile extends  CommonFields{
 
         @Column(name = "AUDIT_ID", length = 100)
         private String auditId;
@@ -37,6 +33,8 @@ public class SPersProfile {
 
         @Column(name = "ROLE_ID", length = 40)
         private String roleId;
+        @Column(name = "DEFAULT_IND", nullable = false, length = 4)
+        private String defaultInd;
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "PERS_ID", nullable = false, insertable = false, updatable = false)

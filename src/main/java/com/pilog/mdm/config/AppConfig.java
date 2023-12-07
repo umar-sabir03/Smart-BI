@@ -1,8 +1,10 @@
 package com.pilog.mdm.config;
 
 import com.pilog.mdm.service.SPersDetailService;
+import com.pilog.mdm.utils.InsightsUtils;
 import com.pilog.mdm.utils.PilogEncryption;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
@@ -22,7 +23,7 @@ private final SPersDetailService spdSer;
     public UserDetailsService userDetailsService(){
         return username -> spdSer.loadUserByUsername(username);
     }
-    @Bean//beans should always be public
+    @Bean
     public AuthenticationProvider authProvider(){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setPasswordEncoder(passwordEncoder());//can change to custom enc
@@ -38,5 +39,13 @@ private final SPersDetailService spdSer;
     public PasswordEncoder passwordEncoder(){
         return new PilogEncryption();
     }
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
+    }
 
+    @Bean
+    public InsightsUtils insightsUtils() {
+        return new InsightsUtils();
+    }
 }
