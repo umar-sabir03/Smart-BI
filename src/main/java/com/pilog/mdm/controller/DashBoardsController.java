@@ -32,7 +32,6 @@ public class DashBoardsController {
 			throw new RuntimeException("Something Went Wrong...");
 		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
-
 	}
 
 }

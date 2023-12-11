@@ -32,6 +32,4 @@ public class AuthLoginController {
 	public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegistrationRequest request) {
 		return new ResponseEntity<>(regSer.registerUser(request), HttpStatus.CREATED);
 	}
-
-
 }
