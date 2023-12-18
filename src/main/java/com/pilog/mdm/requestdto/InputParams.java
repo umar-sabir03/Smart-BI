@@ -8,6 +8,4 @@ public class InputParams {
 
 	private String chartIds;
 
-	private String kanbanViewName;
-
 }

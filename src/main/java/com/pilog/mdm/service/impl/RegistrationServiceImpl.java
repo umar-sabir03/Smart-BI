@@ -80,7 +80,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		SPersnolisationId sPersnolId = new SPersnolisationId();
 		sPersnolId.setFileName(InsightsConstants.FILE_NAME);
 		sPersnolId.setType(InsightsConstants.TYPE);
-		sPersnol = utils.setMetadata(sPersnol, request.getUserName());
+		LocalDate date = LocalDate.now();
+		sPersnol.setEditDate(date);
+		sPersnol.setCreateDate(date);
+		sPersnol.setCreateBy(request.getUserName());
+		sPersnol.setEditBy(request.getUserName());
+	//	sPersnol = utils.setMetadata(sPersnol, request.getUserName());
 		sPersnolId.setPersId(request.getPersId());
 		String auditId = utils.generateId();
 		sPersnol.setAuditId(auditId);

@@ -1,8 +1,8 @@
 package com.pilog.mdm.model;
 
-import javax.persistence.MappedSuperclass;
 import lombok.Data;
 
+import javax.persistence.MappedSuperclass;
 import java.time.LocalDate;
 
 @MappedSuperclass

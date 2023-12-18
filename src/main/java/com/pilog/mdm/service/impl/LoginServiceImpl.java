@@ -7,6 +7,8 @@ import com.pilog.mdm.requestbody.AuthResponse;
 import com.pilog.mdm.service.LoginService;
 import com.pilog.mdm.service.SPersDetailService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,26 +24,37 @@ public class LoginServiceImpl implements LoginService {
 	private final AuthenticationManager authMgr;
 	private final JwtService jwtService;
 
+	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+
+
 	@Override
 	public AuthResponse authenticate(AuthRequest loginRequest) {
 		AuthResponse authResponse=new AuthResponse();
-		authentication(loginRequest.getUsername(),loginRequest.getPassword());
+		try {
+			logger.info("Attempting to authenticate user: {}", loginRequest.getUsername());
+			authentication(loginRequest.getUsername(),loginRequest.getPassword());
 		UserDetails userDetails = sPDService.loadUserByUsername(loginRequest.getUsername());
 		String token = jwtService.generateToken(userDetails);
 			 authResponse.setToken(token);
 			 authResponse.setMessage("Success");
+			logger.info("User {} authenticated successfully", loginRequest.getUsername());
+		} catch (Exception e) {
+			logger.error("Error during authentication for user {}: {}", loginRequest.getUsername(), e.getMessage(), e);
+			authResponse.setMessage("Authentication failed");
+		}
 		return authResponse;
 	}
     	private void authentication(String username, String password) {
+			try {
 			String encodePassword = password+ (username.toUpperCase());
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(username, encodePassword);
-		try {
+			logger.info("Attempting authentication for user: {}", username);
 			authMgr.authenticate(usernamePasswordAuthenticationToken);
-		} catch (BadCredentialsException e) {
-			e.printStackTrace();
-			throw new InvalidUsernameException("Invalid username & password!!");
-		}
-
+		}  catch (BadCredentialsException e) {
+				// Log authentication failure
+				logger.warn("Authentication failed for user {}: {}", username, e.getMessage(), e);
+				throw new InvalidUsernameException("Invalid username & password!!");
+			}
 	}
 
 }

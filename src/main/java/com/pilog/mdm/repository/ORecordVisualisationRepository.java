@@ -12,4 +12,7 @@ public interface ORecordVisualisationRepository extends JpaRepository<ORecordVis
             "WHERE roleId = :roleId " +
             "ORDER BY dashboardName")
     List<String> findDashBoardNameByRoleId(String roleId);
+
+
+    List<ORecordVisualisation> findByDashboardNameAndRoleIdOrderByChartSequenceNo(String dashbordname, String mmManager);
 }

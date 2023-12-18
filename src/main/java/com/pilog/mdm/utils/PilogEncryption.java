@@ -34,8 +34,6 @@ public class PilogEncryption implements PasswordEncoder {
 	@Override
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
 		String encryptedPassword = encrypt( "",rawPassword.toString(), InsightsConstants.ORGN_ID);
-		System.out.println(encryptedPassword);
-		System.out.println(encodedPassword);
 		return encodedPassword.equals(encryptedPassword);
 	}
 }

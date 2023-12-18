@@ -24,8 +24,6 @@ import java.util.Properties;
 @Service
 @RequiredArgsConstructor
 public class EmailNotificationServiceImpl implements EmailNotificationService {
-
-
     private final DalMailConfigRepository mailRepo;
     private final IOtpGenerator otpGenerator;
 

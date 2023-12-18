@@ -4,11 +4,12 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Blob;
+import java.time.LocalDate;
 
 @Data
 @Entity
 @Table(name = "S_PERSNOLISATION")
-public class SPersnolisation extends CommonFields {
+public class SPersnolisation{
 
      @Column(name = "AUDIT_ID", length = 4000)
     private String auditId;
@@ -23,4 +24,17 @@ public class SPersnolisation extends CommonFields {
     private SPersnolisationId id;
     @Column(name = "CONTENT")
     private Blob content;
+
+    @Column(name = "CREATE_DATE")
+    private LocalDate createDate;
+
+    @Column(name = "CREATE_BY", length = 50)
+    private String createBy;
+
+
+    @Column(name = "EDIT_DATE")
+    private LocalDate editDate;
+
+    @Column(name = "EDIT_BY", length = 50)
+    private String editBy;
 }
