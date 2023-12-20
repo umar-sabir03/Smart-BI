@@ -11,7 +11,6 @@ import com.pilog.mdm.utils.InsightsConstants;
 import com.pilog.mdm.utils.InsightsUtils;
 import com.pilog.mdm.utils.PilogEncryption;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private final JwtService jwtService;
 	private final PasswordEncoder passwordEncoder;
 
-	@SneakyThrows
 	@Override
 	public AuthResponse registerUser(RegistrationRequest request) {
 		SPersDetail sPersDetailObj= sPersDetailRepo.findByUserNameIgnoreCase(request.getUserName());
@@ -70,8 +68,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		sPersProfile.setRegion(InsightsConstants.REGION);
 		sPersProfile.setDefaultInd(InsightsConstants.DEFAULT_IND);
 		String auditId = utils.generateId();
+		auditId= "S_PERS_PROFILE_" + auditId;
 		sPersProfile = utils.setMetadata(sPersProfile, request.getUserName());
-		sPersProfile.setAuditId(auditId);
+		sPersProfile.setAuditId(sPersDetail.getAuditId());
 		return sPersProfile;
 	}
 
@@ -85,9 +84,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		sPersnol.setCreateDate(date);
 		sPersnol.setCreateBy(request.getUserName());
 		sPersnol.setEditBy(request.getUserName());
+
+		String auditId = utils.generateId();
+		auditId= "S_PERSNOLISATION_" + auditId;
 	//	sPersnol = utils.setMetadata(sPersnol, request.getUserName());
 		sPersnolId.setPersId(request.getPersId());
-		String auditId = utils.generateId();
 		sPersnol.setAuditId(auditId);
 		sPersnol.setId(sPersnolId);
 		return sPersnol;
@@ -95,7 +96,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private SPersonnel setSPersonnel(RegistrationRequest request, SPersDetail sPersDetail) {
 		SPersonnel sPersonnel = new SPersonnel();
-		sPersonnel.setLoginAttempts(BigInteger.ZERO);
+		sPersonnel.setLoginAttempts(0);
 		sPersonnel.setExpiryDate(InsightsConstants.EXPIRY_DATE);
 		sPersonnel.setOrgnId(InsightsConstants.ORGN_ID);
 		sPersonnel.setStatus(InsightsConstants.STATUS);
@@ -103,6 +104,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		sPersonnel.setPasswordFlag("N");
 		sPersonnel.setPersId(request.getPersId());
 		String auditId = utils.generateId();
+		auditId= "S_PERSONNEL_" + auditId;
 		sPersonnel.setAuditId(auditId);
 
 		return sPersonnel;
@@ -113,8 +115,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		SAuthorisationId sAuthId = new SAuthorisationId();
 		sAuth = utils.setMetadata(sAuth, request.getUserName());
 		sAuthId.setPersId(request.getPersId());
-		String auditId = utils.generateId();
-		sAuth.setAuditId(auditId);
+		sAuth.setAuditId("S_AUTHORISATION_"+sPersDetail.getAuditId());
 		String encPassPhrase = passwordEncoder.encode(request.getPassword());
 		sAuthId.setPassPhrase(encPassPhrase);
 		sAuth.setId(sAuthId);

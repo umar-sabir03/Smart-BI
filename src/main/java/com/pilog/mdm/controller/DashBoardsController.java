@@ -32,27 +32,15 @@ public class DashBoardsController {
 	@GetMapping(value = "/getChartNames")
 	public ResponseEntity<Map<String,List<String>>> getChartCategoryNames() {
 		Map<String,List<String>> result=new HashMap<>();
-		try {
 			List<String> chartCategoryNames = dashBoardsService.getChartCategoryNames();
 			result.put("chartCategoryNames", chartCategoryNames);
 			logger.info("Successfully retrieved chart data: {}", chartCategoryNames);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while fetching chart data: {}", e.getMessage(), e);
-			throw new RuntimeException("Something Went Wrong...");
-		}
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("/getChartData")
 	public ResponseEntity<Map<String,Object>> fetchChartData(HttpServletRequest request, @RequestBody InputParams ip) {
-		Map<String,Object> chartCards=new HashMap<>();
-		try {
-		 chartCards = dashBoardsService.getChartCards( ip);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Map<String,Object> chartCards= dashBoardsService.getChartCards( ip);
 		return new ResponseEntity<>(chartCards,HttpStatus.OK);
 	}
 

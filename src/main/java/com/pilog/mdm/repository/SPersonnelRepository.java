@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SPersonnelRepository extends JpaRepository<SPersonnel, String> {
-
+    SPersonnel  findTop1ByPersIdOrderByCreateDate(String PersId);
 }

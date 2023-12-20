@@ -30,16 +30,10 @@ public class EmailNotificationsController {
 	@GetMapping(value = "/sendOtpToEmail")
 	public ResponseEntity<Map<String,String>> sendOtpToEmail(@Validated @RequestParam("email") String email) {
 		Map<String,String> resp=new HashMap<>();
-		try {
 			String message = emailService.sendEmail(email);
 			resp.put("message", message);
 			logger.info("Email sent successfully to: {}", email);
 			return new ResponseEntity<>(resp, HttpStatus.OK);
-		} catch (Exception e) {
-			resp.put("message", "Error sending email");
-			logger.error("Error sending email to {}: {}", email, e.getMessage(), e);
-			return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 	@PostMapping(value = "/verifyemail")
 	public ResponseEntity<Map<String,String>> verifyOtp( @RequestBody VerifyEmailDTO verifyEmailDTO)
@@ -53,29 +47,16 @@ public class EmailNotificationsController {
 			logger.warn("Invalid OTP received for email: {}", userEmail);
 			return new ResponseEntity<>(result,HttpStatus.UNAUTHORIZED);
 		}
-		try {
 		emailService.sendEmailVerification(userEmail);
 			result.put("message","Email Verified Successfully");
 			logger.info("Email verification successful for: {}", userEmail);
 
-		}catch (Exception ex){
-			logger.error("Error verifying email for {}: {}", userEmail, ex.getMessage(), ex);
-			ex.printStackTrace();
-			result.put("error", ex.getMessage());
-		return new ResponseEntity<>(result,HttpStatus.INTERNAL_SERVER_ERROR);
-    	}
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	@GetMapping(value = "/roles")
 	public ResponseEntity<List<String>> getroles(){
-		List<String> resp;
-		try {
-			resp = profileService.getAllRoles();
+		List<String> resp=profileService.getAllRoles();
 			logger.info("Successfully retrieved roles: {}", resp);
 			return new ResponseEntity<>(resp, HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("Error while fetching roles: {}", e.getMessage(), e);
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 }

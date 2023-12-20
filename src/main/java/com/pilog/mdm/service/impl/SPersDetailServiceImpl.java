@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SPersDetailServiceImpl implements SPersDetailService {
+public class SPersDetailServiceImpl implements SPersDetailService  {
     @Autowired
     private SPersDetailRepository spersRepo;
 
@@ -48,5 +48,11 @@ public class SPersDetailServiceImpl implements SPersDetailService {
             logger.error("Error while loading user details for username {}: {}", username, e.getMessage(), e);
             throw new UsernameNotFoundException("User not found");
         }
+    }
+
+    @Override
+    public SPersDetail getUserByUsername(String username) {
+        SPersDetail sPersDetail = spersRepo.findByUserNameIgnoreCase(username);
+        return sPersDetail;
     }
 }

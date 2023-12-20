@@ -11,7 +11,7 @@ public class InsightsUtils {
 
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 	public String generateId() {
-		return RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+		return RandomStringUtils.randomAlphanumeric(32).toUpperCase();
 	}
 
 	public CommonFields setRegistrationsCommonFields(String userName) {

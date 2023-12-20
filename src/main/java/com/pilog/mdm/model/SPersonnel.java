@@ -26,7 +26,7 @@ public class SPersonnel extends CommonFields {
     @Column(name = "PASSWORD_FLAG", nullable = false, length = 4)
     private String passwordFlag;
     @Column(name = "LOGIN_ATTEMPTS", nullable = false, precision = 22, scale = 0)
-    private BigInteger loginAttempts;
+    private Integer loginAttempts;
     @Column(name = "ORGN_ID", nullable = false)
     private String orgnId;
 

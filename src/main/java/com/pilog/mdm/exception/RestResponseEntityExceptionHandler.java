@@ -24,12 +24,14 @@ public class RestResponseEntityExceptionHandler {
 		e.setMessage(ex.getMessage());
 		return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 	}
-	@ExceptionHandler
-	public ResponseEntity<RestExceptionStatusResponse> handleRegistrationException(RegistrationException regEx){
+	@ExceptionHandler(RegistrationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<RestExceptionStatusResponse> handleRegistrationException(RegistrationException regEx) {
+		logger.error("An error occurred during registration: {}", regEx.getMessage(), regEx);
 		RestExceptionStatusResponse e = new RestExceptionStatusResponse();
 		e.setStatus(HttpStatus.BAD_REQUEST.value());
 		e.setMessage(regEx.getMessage());
-		return new ResponseEntity<RestExceptionStatusResponse>(e,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -55,5 +57,20 @@ public class RestResponseEntityExceptionHandler {
 		response.setStatus(status.value());
 		response.setMessage(message);
 		return response;
+	}
+	@ExceptionHandler(Exception.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<RestExceptionStatusResponse> handleGenericException(Exception ex) {
+		logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
+		RestExceptionStatusResponse e = new RestExceptionStatusResponse();
+		e.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		e.setMessage("An unexpected error occurred. Please try again later.");
+		return new ResponseEntity<>(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	@ExceptionHandler({CustomJsonProcessingException.class,CustomMissingHeaderException.class})
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<String> handleJsonProcessingException(Exception ex) {
+		logger.error("Error: {}", ex.getMessage(), ex);
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 }
