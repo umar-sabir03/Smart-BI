@@ -6,6 +6,7 @@ import com.pilog.mdm.repository.ORecordVisualisationRepository;
 import com.pilog.mdm.requestdto.InputParams;
 import com.pilog.mdm.utils.PilogUtilities;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -41,7 +42,7 @@ public class DashBoardsService {
 
 
 	public Map<String,Object> getChartCards(InputParams ip) {
-		Map<String,Object> result=new HashMap<>();
+		Map<String,Object> result=new LinkedHashMap<>();
 		Map<String,String> dataobj=new HashMap<>();
 		List<Map<String,String>> dataarr=new ArrayList<>();
 		try {
@@ -73,11 +74,19 @@ public class DashBoardsService {
 					logger.info("Processing chart data for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
 					dataarr.add(dataobj);
 					logger.info("Fetching home card details for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
-					result.put("CardData" + i + "", fetchHomeCardDetails( dataobj, ip));
+						JSONObject cardData = (JSONObject) fetchHomeCardDetails(dataobj, ip);
+						if (cardData != null && !ObjectUtils.isEmpty(cardData)) {
+							result.put("CardData" + i, cardData);
+						}
 					logger.info("Getting chart data list for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
-				result.put("chartData" + i + "", getChartDataList(dataobj, ip));
+						JSONObject chartDataList = getChartDataList(dataobj, ip);
+						if (chartDataList != null && !ObjectUtils.isEmpty(chartDataList)) {
+							result.put("chartData" + i ,chartDataList );
+						}
 				}}
 			}
+
+
 
 		} catch (Exception e) {
 			logger.error("An error occurred in getChartCards method.", e.getMessage());
@@ -115,8 +124,8 @@ public class DashBoardsService {
 			String tableName = String.valueOf(dataObj.get("table"));
 		//	String columnName = ColumnStr.replace(")","");
 			String type = valueCSelect.replaceAll("\\(.*", "");
-			if("UNIQUECOUNT".equals(type))
-		      type="COUNT";
+//			if("UNIQUECOUNT".equals(type))
+//		      type="COUNT";
 			String selectedvalue = valueColumnName;
 			String filterCondition = String.valueOf(dataObj.get("filterCondition"));
 			Lebel = String.valueOf(dataObj.get("Lebel"));
@@ -266,9 +275,9 @@ public class DashBoardsService {
 						percent = percentage + "<img src='images/like_1.png' class='icon' width='50px'>";
 					}
 				} else {
-					if("SALESDATA".equals(tableName))
-						tableName="SALES_DATA";
-					if (type != null && !"".equalsIgnoreCase(type) && !"UniqueCount".equals(type)) {
+//					if("SALESDATA".equals(tableName))
+//						tableName="SALES_DATA";
+					if (type != null && !"".equalsIgnoreCase(type) ) {
 						selectQuery = "SELECT " + type + "(" + columnName + ") FROM " + tableName + whereCondQuery;
 					} else {
 //	                    SELECT COUNT(*) AS VALUE FROM (SELECT  DISTINCT COMMODITY FROM  V_MAND_ATTR_VIEW )
@@ -276,7 +285,7 @@ public class DashBoardsService {
 								+ tableName + whereCondQuery + ")";
 //	                   selectQuery = "SELECT  " + type + "(" + columnName + ") FROM " + tableName + whereCondQuery;
 					}
-					if (!("SALES_HAL7".equals(tableName)) && !("SALESDATA2".equals(tableName) ) && !("SALES_HAL27".equals(tableName))) {
+//					if (!("SALES_HAL7".equals(tableName)) && !("SALESDATA2".equals(tableName) ) && !("SALES_HAL27".equals(tableName))) {
 						System.out.println("line 277 "+ selectQuery);
 						logger.info("Executing SQL Query: {}", selectQuery);
 
@@ -294,9 +303,11 @@ public class DashBoardsService {
 						result.add(columnName);
 						result.add(Lebel);
 					}
-				}}
+		//		}
+				}
 				tabledataobj.put("result", result);
-			}  //som
+			}
+
 		}catch(Exception e)
 		{
 			logger.error("An error occurred in fetchHomeCardDetails method.", e.getMessage());
@@ -459,16 +470,16 @@ public class DashBoardsService {
 			}
 
 			if (isValidString(selectQuery) && tables != null && !tables.isEmpty()) {
-				String tableName = tables.equals("SALESDATA") ? "SALES_DATA" : tables;
+	//			String tableName = tables.equals("SALESDATA") ? "SALES_DATA" : tables;
 				String countQuery = "";
 
 				selectQuery = PilogUtilities.trimChar(selectQuery, ',');
-				selectQuery = "SELECT " + selectQuery + " FROM " + tableName + whereCondQuery + groupByCond + orderBy;
+				selectQuery = "SELECT " + selectQuery + " FROM " + tables + whereCondQuery + groupByCond + orderBy;
 
-				countQuery = "SELECT COUNT(*) FROM " + tableName + whereCondQuery + groupByCond;
+				countQuery = "SELECT COUNT(*) FROM " + tables + whereCondQuery + groupByCond;
 				System.out.println("selectQuery ::: " + selectQuery);
 			}
-			if (!("SALES_HAL7".equals(tables)) && !("SALESDATA2".equals(tables)) && !("SALES_HAL27".equals(tables))) {
+	//		if (!("SALES_HAL7".equals(tables)) && !("SALESDATA2".equals(tables)) && !("SALES_HAL27".equals(tables))) {
 				System.out.println("line 461 " + selectQuery);
 
 				try {
@@ -525,10 +536,11 @@ public class DashBoardsService {
 								// Handle invalid data structure
 								System.out.println("Invalid data structure: " + data);
 							}
-
-						chartListObj.put("chartTitle", chartTitleStr);
-						chartListObj.put("chartType", chartType);
-						chartListObj.put("chartLevelsAndValueObj", chartDataArr);
+						if(!"Card".equals(chartType)) {
+							chartListObj.put("chartTitle", chartTitleStr);
+							chartListObj.put("chartType", chartType);
+							chartListObj.put("chartLevelsAndValueObj", chartDataArr);
+						}
 
 					}
 				} catch (Exception e) {
@@ -536,7 +548,7 @@ public class DashBoardsService {
 					logger.error("An error occurred in getChartDataList method inside if block .", e.getMessage());
 				}
 
-		}
+//		}
 			System.out.println("selectQuery2 :::" + selectQuery);
 		} catch (Exception e) {
 		logger.error("An error occurred in getChartDataList method.", e.getMessage());
