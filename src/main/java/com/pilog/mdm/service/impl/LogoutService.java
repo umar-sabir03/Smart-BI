@@ -1,6 +1,5 @@
 package com.pilog.mdm.service.impl;
 
-import com.pilog.mdm.exception.RegistrationException;
 import com.pilog.mdm.model.SPersAudit;
 import com.pilog.mdm.repository.SPersAuditRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
