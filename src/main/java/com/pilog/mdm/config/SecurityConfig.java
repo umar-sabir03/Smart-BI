@@ -2,6 +2,7 @@ package com.pilog.mdm.config;
 
 import com.pilog.mdm.filters.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,6 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -71,5 +75,27 @@ public class SecurityConfig {
 
         return httpSecurity.build();
 
+    }
+
+    @Bean
+
+    public FilterRegistrationBean corsFilter()
+
+    {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");  // Consider restricting in production
+        config.addAllowedHeader("Authorization");
+        config.addAllowedHeader("Content-type");
+        config.addAllowedHeader("Accept");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("OPTIONS");
+        config.setMaxAge(3600L);
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        return bean;
     }
 }
