@@ -36,8 +36,7 @@ public class DashBoardsService {
 	private final IDashBoardRepository dashBoardRepository;
 	private static final Logger logger = LoggerFactory.getLogger(DashBoardsService.class);
 	public List<String> getChartCategoryNames( ) {
-		List<String> chartCategoryNames = orecordRepo.findDashBoardNameByRoleId("MM_MANAGER");
-		return chartCategoryNames;
+		return orecordRepo.findDashBoardNameByRoleId("MM_MANAGER");
 	}
 
 
