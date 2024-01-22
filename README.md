@@ -5,9 +5,6 @@
  This project is used for user registration and login processes which generates tokens that are used
 for sending requests.
 
-## Reference from:
-    https://www.youtube.com/watch?v=KxqlJblhzfI
-
 ### Spring boot version: 2.7.1
 ### Java version: 17
 
