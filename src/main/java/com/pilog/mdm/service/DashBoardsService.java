@@ -73,15 +73,19 @@ public class DashBoardsService {
 					logger.info("Processing chart data for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
 					dataarr.add(dataobj);
 					logger.info("Fetching home card details for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
+					if(oRecordVisualisationObj.getChartType().equalsIgnoreCase("card")) {
 						JSONObject cardData = (JSONObject) fetchHomeCardDetails(dataobj, ip);
 						if (cardData != null && !ObjectUtils.isEmpty(cardData)) {
 							result.put("CardData" + i, cardData);
 						}
-					logger.info("Getting chart data list for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
+					}
+					else {
+						logger.info("Getting chart data list for DashboardName: {}", oRecordVisualisationObj.getDashboardName());
 						JSONObject chartDataList = getChartDataList(dataobj, ip);
 						if (chartDataList != null && !ObjectUtils.isEmpty(chartDataList)) {
-							result.put("chartData" + i ,chartDataList );
+							result.put("chartData" + i, chartDataList);
 						}
+					}
 				}}
 			}
 
