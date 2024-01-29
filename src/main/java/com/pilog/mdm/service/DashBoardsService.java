@@ -50,7 +50,6 @@ public class DashBoardsService {
 
 				for (int i = 0; i < oRecordVisualisationList.size(); i++) {
 					ORecordVisualisation oRecordVisualisationObj = oRecordVisualisationList.get(i);
-					if(oRecordVisualisationObj.getChartProperties()!=null | oRecordVisualisationObj.getAggregateColumns()!=null){
 					dataobj.put("xAxix", oRecordVisualisationObj.getXAxisValue());
 					dataobj.put("yAxix", oRecordVisualisationObj.getYAxisValue());
 					dataobj.put("type", oRecordVisualisationObj.getChartType());
@@ -86,7 +85,18 @@ public class DashBoardsService {
 							result.put("chartData" + i, chartDataList);
 						}
 					}
-				}}
+
+					if (oRecordVisualisationObj.getFilterColumn() != null
+								&& !"".equals(oRecordVisualisationObj.getFilterColumn()) &&
+					        !oRecordVisualisationObj.getChartType().equalsIgnoreCase("CARD") &&
+							!oRecordVisualisationObj.getChartType().equalsIgnoreCase("COMPARE_FILTER")
+ 			) {
+							if (oRecordVisualisationObj.getFilterColumn() instanceof String) {
+								result.put("dropdowns", getDropdowns(oRecordVisualisationObj.getFilterColumn()));
+							}
+						}
+
+					}
 			}
 
 
@@ -96,6 +106,8 @@ public class DashBoardsService {
 		}
 		return result;
 	}
+
+
 	@Transactional(rollbackFor = Exception.class)
 	private Object fetchHomeCardDetails(Map<String,String> dataObj, InputParams ip) {
 		JSONObject tabledataobj = new JSONObject();
@@ -787,4 +799,16 @@ public class DashBoardsService {
 		}
 		return null;
 	}
+
+	private Set<String> getDropdowns(String filterColumn) {
+		Set<String> result=new HashSet<>();
+		String[] dropdowns = filterColumn.split(",");
+		for(String dropdown:dropdowns){
+			String substring = dropdown.substring(dropdown.lastIndexOf(".")+1).replaceAll("_"," ");
+
+			result.add(substring);
+		}
+		return result;
+	}
+
 }
