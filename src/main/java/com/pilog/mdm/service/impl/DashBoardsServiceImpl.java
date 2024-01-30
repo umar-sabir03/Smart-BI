@@ -1,9 +1,11 @@
-package com.pilog.mdm.service;
+package com.pilog.mdm.service.impl;
 
 import com.pilog.mdm.model.ORecordVisualisation;
 import com.pilog.mdm.repository.IDashBoardRepository;
+import com.pilog.mdm.repository.IDynamicColumnDataRepository;
 import com.pilog.mdm.repository.ORecordVisualisationRepository;
 import com.pilog.mdm.requestdto.InputParams;
+import com.pilog.mdm.service.IDashBoardsService;
 import com.pilog.mdm.utils.PilogUtilities;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -26,15 +28,18 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class DashBoardsService {
+public class DashBoardsServiceImpl implements IDashBoardsService {
 
 	@Autowired
-	public ORecordVisualisationRepository orecordRepo;
+	private ORecordVisualisationRepository orecordRepo;
+
+
+	private final IDynamicColumnDataRepository columnData;
 	@Value("${spring.datasource.driver-class-name}")
 	private String dataBaseDriver;
 
 	private final IDashBoardRepository dashBoardRepository;
-	private static final Logger logger = LoggerFactory.getLogger(DashBoardsService.class);
+	private static final Logger logger = LoggerFactory.getLogger(DashBoardsServiceImpl.class);
 	public List<String> getChartCategoryNames( ) {
 		return orecordRepo.findDashBoardNameByRoleId("MM_MANAGER");
 	}
@@ -128,6 +133,10 @@ public class DashBoardsService {
 						JSONObject yAxisValueObject = (JSONObject) obj;
 						 valueColumnName = ((String) yAxisValueObject.get("columnName")).replaceAll("\\([^\\.]*\\)", "");
 						 valueCSelect = (String) yAxisValueObject.get("aggColumnName");
+						if( "UniqueCount".equalsIgnoreCase(valueCSelect))
+						{
+							valueCSelect="Count";
+						}
 					}
 				}
 			}
@@ -190,7 +199,7 @@ public class DashBoardsService {
 			String toWhereCondQuery = "";
 
 			if (filterCondition != null && !"".equalsIgnoreCase(filterCondition)
-					&& !"null".equalsIgnoreCase(filterCondition)) {
+					&& !"null".equalsIgnoreCase(filterCondition) && !filterCondition.isEmpty()) {
 				filterColsArr = (JSONArray) JSONValue.parse(filterCondition);
 			}
 			if (filterColsArr != null && !filterColsArr.isEmpty()) {
@@ -330,7 +339,7 @@ public class DashBoardsService {
 		return tabledataobj;
 	}
 
-	public String withSuffix(long count) {
+	private String withSuffix(long count) {
 		if (count < 1000) {
 			return "" + count;
 		}
@@ -340,7 +349,7 @@ public class DashBoardsService {
 
 
 	@Transactional(rollbackFor = Exception.class)
-	public JSONObject getChartDataList( Map<String,String> dataObj, InputParams ip) {
+	private JSONObject getChartDataList( Map<String,String> dataObj, InputParams ip) {
 		JSONObject chartListObj = new JSONObject();
 		JSONArray chartDataArr = new JSONArray();
     try{
@@ -572,7 +581,7 @@ public class DashBoardsService {
 	}
 
 	@Transactional
-	public String buildCondition(JSONObject paramObj) {
+	private String buildCondition(JSONObject paramObj) {
 		String conditionQuery = "";
 		try {
 			String operatorName = (String) paramObj.get("operator");
@@ -737,7 +746,7 @@ public class DashBoardsService {
 		return conditionQuery;
 	}
 
-	public String generateInStr(String value) {
+	private String generateInStr(String value) {
 
 		try {
 			System.err.println("value:::Before:::" + value);
@@ -800,15 +809,24 @@ public class DashBoardsService {
 		return null;
 	}
 
-	private Set<String> getDropdowns(String filterColumn) {
-		Set<String> result=new HashSet<>();
+	private Map<String,Set<String>> getDropdowns(String filterColumn) {
+		Set<String> resultColumns=new HashSet<>();
+		Set<String> resultTable=new HashSet<>();
+		Map<String,Set<String>> resultMap=new HashMap();
 		String[] dropdowns = filterColumn.split(",");
 		for(String dropdown:dropdowns){
-			String substring = dropdown.substring(dropdown.lastIndexOf(".")+1).replaceAll("_"," ");
-
-			result.add(substring);
+			String tableName = dropdown.substring(0, dropdown.lastIndexOf("."));
+			String columnNames = dropdown.substring(dropdown.lastIndexOf(".")+1).replaceAll("_"," ");
+			resultColumns.add(columnNames);
+			resultTable.add(tableName);
 		}
-		return result;
+		resultMap.put("TABLE_NAME",resultTable);
+		resultMap.put("COLUMN_NAMES",resultColumns);
+		return resultMap;
 	}
 
+	@Override
+	public Set<String> getColumnData(String columnName, String tableName) {
+		return columnData.getColumnData(columnName,tableName);
+	}
 }
