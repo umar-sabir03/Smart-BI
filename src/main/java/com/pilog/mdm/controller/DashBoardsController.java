@@ -44,7 +44,13 @@ public class DashBoardsController {
 
 	@PostMapping("/getChartData")
 	public ResponseEntity<Map<String,Object>> fetchChartData(HttpServletRequest request, @RequestBody InputParams ip) {
-//		 dashBoardsService.getChartCards( ip);
+		Map<String,Object> chartCards= dashBoardsService.getChartCards( ip);
+	//	Map<String,Object> chartCards=dashBoardsService.getChartDataAndCardData( ip);
+		return new ResponseEntity<>(chartCards,HttpStatus.OK);
+	}
+	@PostMapping("/getChartAndCardData")
+	public ResponseEntity<Map<String,Object>> getChartAndCardData(HttpServletRequest request, @RequestBody InputParams ip) {
+		//	Map<String,Object> chartCards= dashBoardsService.getChartCards( ip);
 		Map<String,Object> chartCards=dashBoardsService.getChartDataAndCardData( ip);
 		return new ResponseEntity<>(chartCards,HttpStatus.OK);
 	}

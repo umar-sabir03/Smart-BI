@@ -56,7 +56,6 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         Map<String, String> dataobj = new HashMap<>();
         List<Map<String, String>> dataarr = new ArrayList<>();
         try {
-            //		getChartDataAndCardData(ip);
             List<ORecordVisualisation> oRecordVisualisationList = orecordRepo.findByDashboardNameAndRoleIdOrderByChartSequenceNo(ip.getDashbordname(), "MM_MANAGER");
             if (oRecordVisualisationList != null && !oRecordVisualisationList.isEmpty()) {
 
@@ -1149,10 +1148,10 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 //        queryBuilder.append(" ORDER BY ").append(yAxisColumnNames.get(0)).append(" DESC");
 
         String query = queryBuilder.toString();
-        List<Map<String, Object>> chartDataList = chartDataRepository.getChartData(query);
-        int limit = Math.min(10, chartDataList.size());
+        List<Map<String, Object>> cardtDataList = chartDataRepository.getChartData(query);
+        int limit = Math.min(10, cardtDataList.size());
         for (int i = 0; i < limit; i++) {
-            resultMap.add(chartDataList.get(i));
+            resultMap.add(cardtDataList.get(i));
         }
 
         return resultMap;
