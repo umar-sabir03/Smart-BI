@@ -85,7 +85,7 @@ public class ORecordVisualisation {
     @Column(name = "DASHBORD_NAME", length = 100)
     private String dashboardName;
 
-    @Column(name = "CHART_TITLE", length = 200)
+    @Column(name = "CHART_TITTLE", length = 200)
     private String chartTitle;
 
     @Column(name = "VISUALIZE_CUST_COL11", length = 3000)
