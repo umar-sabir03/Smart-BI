@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -999,7 +1000,17 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 operator = filterCondition.get("operator");
                 values = filterCondition.get("values");
 
-                String[] valueArray = values.split(",");
+                String[] valueArr = values.split(",");
+                List<String> valueArray = Arrays.stream(valueArr)
+                        .map(val -> {
+                            if (val.contains("$")) {
+                                return val.replace("$", ",");
+                            } else if (val.contains("#")) {
+                                return val.replace("#", " ");
+                            }
+                            return val;
+                        })
+                        .collect(Collectors.toList());
                 StringBuilder valuesStringBuilder = new StringBuilder();
 
                 for (String val : valueArray) {
@@ -1153,7 +1164,6 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         for (int i = 0; i < limit; i++) {
             resultMap.add(cardtDataList.get(i));
         }
-
         return resultMap;
     }
 
