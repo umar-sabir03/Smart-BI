@@ -866,17 +866,25 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         List<Map<String, String>> yAxisMap = new ArrayList<>();
         List<Map<String, String>> filterConditionMap = new ArrayList<>();
         List<Map<String, Object>> chartCoordinates = new ArrayList<>();
+        List<Map<String, Object>> chartCoordinatesByQuery = new ArrayList<>();
         Map<String, String> chartPropertiesMap = new HashMap<>();
         String xAxisValue = oRecordVisualisationObj.getXAxisValue();
         String yAxisValue = oRecordVisualisationObj.getYAxisValue();
         String filterCondition = oRecordVisualisationObj.getFilterCondition();
         String chartType = oRecordVisualisationObj.getChartType();
         String chartProperties = oRecordVisualisationObj.getChartProperties();
+        String dbQuery = oRecordVisualisationObj.getDbQuery();
 
-        if (xAxisValue == null || xAxisValue.isEmpty() && yAxisValue == null || yAxisValue.isEmpty()) {
-            return result;
+        if ((xAxisValue == null || xAxisValue.isEmpty()) && (yAxisValue == null || yAxisValue.isEmpty())) {
+            if (dbQuery == null || dbQuery.isEmpty()) {
+                return result;
+            } else {
+                if (dbQuery != null && !dbQuery.isEmpty()) {
+                    chartCoordinatesByQuery = chartCoordinatesByQuery(dbQuery);
+                }
+
+            }
         }
-
         if (xAxisValue != null && !xAxisValue.isEmpty()) {
             xAxisMap = convertStringToListMap(xAxisValue);
         }
@@ -890,11 +898,15 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             chartPropertiesMap = convertJsonStrToMap(chartProperties);
         }
 
-        chartCoordinates= chartCoordinates(xAxisMap, yAxisMap, filterConditionMap, input);
-        if(chartCoordinates!=null && !chartCoordinates.isEmpty()) {
+        chartCoordinates = chartCoordinates(xAxisMap, yAxisMap, filterConditionMap, input);
+        if (chartCoordinatesByQuery != null && !chartCoordinatesByQuery.isEmpty()) {
+            chartCoordinates.addAll(chartCoordinatesByQuery);
+        }
+
+        if (chartCoordinates != null && !chartCoordinates.isEmpty()) {
             result.put("chartCoordinates", chartCoordinates);
             result.put("chartType", chartType);
-            result.put("chartTitle", chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE")==null?"No Data":chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE"));
+            result.put("chartTitle", chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE") == null ? "No Data" : chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE"));
         }
         return result;
     }
@@ -910,18 +922,18 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
         if (yAxisValue == null || yAxisValue.isEmpty()) {
             return result;
-        }else{
+        } else {
             yAxisMap = convertStringToListMap(yAxisValue);
         }
         if (filterCondition != null && !filterCondition.isEmpty()) {
             filterConditionMap = convertStringToListMap(filterCondition);
         }
 
-        cardData= cardCoordinates(yAxisMap, filterConditionMap, input.getConditions());
-        if(cardData!=null && !cardData.isEmpty()) {
+        cardData = cardCoordinates(yAxisMap, filterConditionMap, input.getConditions());
+        if (cardData != null && !cardData.isEmpty()) {
             result.put("cardData", cardData);
             result.put("chartType", chartType);
-            result.put("cardTitle",oRecordVisualisationObj.getChartTitle() );
+            result.put("cardTitle", oRecordVisualisationObj.getChartTitle());
         }
         return result;
     }
@@ -953,8 +965,10 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
     private List<Map<String, Object>> chartCoordinates(List<Map<String, String>> xAxisMap, List<Map<String, String>> yAxisMap, List<Map<String, String>> filterConditionMap, InputParams input) {
         List<Map<String, Object>> resultMap = new ArrayList<>();
-
-        Map<String, List<String>> conditions=input.getConditions();
+        if ((xAxisMap == null || xAxisMap.isEmpty()) && (yAxisMap == null || yAxisMap.isEmpty())) {
+            return resultMap;
+        }
+        Map<String, List<String>> conditions = input.getConditions();
         String conditionTable = input.getConditionTable();
         // X-AXIS
         String xAxisTableName = "";
@@ -1022,7 +1036,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 }
             }
         }
-        if((xAxisTableName).equalsIgnoreCase(conditionTable)) {
+        if ((xAxisTableName).equalsIgnoreCase(conditionTable)) {
             if (conditions != null && !conditions.isEmpty()) {
                 Set<String> keys = conditions.keySet();
                 if (!queryBuilder.toString().contains("WHERE")) {
@@ -1071,18 +1085,31 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
         String query = queryBuilder.toString();
         List<Map<String, Object>> chartDataList = chartDataRepository.getChartData(query);
+
         int limit = Math.min(10, chartDataList.size());
         for (int i = 0; i < limit; i++) {
             resultMap.add(chartDataList.get(i));
         }
-
         return resultMap;
     }
+
+    private List<Map<String, Object>> chartCoordinatesByQuery(String dbQuery) {
+        List<Map<String, Object>> resultMap = new ArrayList<>();
+        List<Map<String, Object>> chartData = chartDataRepository.getChartData(dbQuery);
+
+        int limit = Math.min(10, chartData.size());
+        for (int i = 0; i < limit; i++) {
+            resultMap.add(chartData.get(i));
+        }
+        return resultMap;
+
+    }
+
     private List<Map<String, Object>> cardCoordinates(List<Map<String, String>> yAxisMap, List<Map<String, String>> filterConditionMap, Map<String, List<String>> conditions) {
         List<Map<String, Object>> resultMap = new ArrayList<>();
 
 
-        String yAxisTableName="";
+        String yAxisTableName = "";
         // Y_AXIS
         List<String> aggFunctionNames = new ArrayList<>();
         List<String> yAxisColumnNames = new ArrayList<>();
@@ -1099,7 +1126,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             for (Map<String, String> yAxis : yAxisMap) {
                 aggFunctionNames.add(yAxis.get("aggColumnName"));
                 String yAxisColumnName = yAxis.get("columnName");
-                yAxisTableName= yAxis.get("tableName");
+                yAxisTableName = yAxis.get("tableName");
                 if (yAxisColumnName != null)
                     queryBuilder.append(yAxisColumnName).append(" AS Y");
                 yAxisColumnNames.add(yAxisColumnName);
@@ -1127,12 +1154,11 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 }
             }
         }
-
         if (conditions != null && !conditions.isEmpty()) {
             Set<String> keys = conditions.keySet();
             if (!queryBuilder.toString().contains("WHERE")) {
                 queryBuilder.append(" WHERE ");
-            }else {
+            } else {
                 queryBuilder.append(" AND ");
             }
 

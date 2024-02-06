@@ -24,8 +24,6 @@ public class DashBoardsController {
 	@Autowired
 	private IDashBoardsService dashBoardsService;
 
-
-
 	private static final Logger logger = LoggerFactory.getLogger(DashBoardsController.class);
 
 	@RequestMapping(value = "/")

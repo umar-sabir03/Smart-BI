@@ -140,5 +140,8 @@ public class ORecordVisualisation {
     @Column(name = "Z_AXIS_VALUE", length = 1000)
     private String zAxisValue;
 
+    @Column(name = "QUERY", length = 1000)
+    private String dbQuery;
+
 
 }
