@@ -885,16 +885,16 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
             }
         }
-        if (xAxisValue != null && !xAxisValue.isEmpty()) {
+        if (xAxisValue != null && !xAxisValue.isEmpty() && !"[]".equals(xAxisValue)) {
             xAxisMap = convertStringToListMap(xAxisValue);
         }
-        if (yAxisValue != null && !yAxisValue.isEmpty()) {
+        if (yAxisValue != null && !yAxisValue.isEmpty() && !"[]".equals(yAxisValue)) {
             yAxisMap = convertStringToListMap(yAxisValue);
         }
-        if (filterCondition != null && !filterCondition.isEmpty()) {
+        if (filterCondition != null && !filterCondition.isEmpty() && !"[]".equals(filterCondition)) {
             filterConditionMap = convertStringToListMap(filterCondition);
         }
-        if (chartProperties != null && !chartProperties.isEmpty()) {
+        if (chartProperties != null && !chartProperties.isEmpty() ) {
             chartPropertiesMap = convertJsonStrToMap(chartProperties);
         }
 
@@ -971,7 +971,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         Map<String, List<String>> conditions = input.getConditions();
         String conditionTable = input.getConditionTable();
         // X-AXIS
-        String xAxisTableName = "";
+        String yAxisTableName = "";
         String xAxisColumnName = "";
 
         // Y_AXIS
@@ -988,7 +988,6 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
         if (xAxisMap != null && !xAxisMap.isEmpty()) {
             for (Map<String, String> xAxis : xAxisMap) {
-                xAxisTableName = xAxis.get("tableName");
                 xAxisColumnName = xAxis.get("columnName");
                 queryBuilder.append(xAxisColumnName).append(" AS X").append(xAxisMap.indexOf(xAxis) + 1).append(", ");
             }
@@ -999,13 +998,18 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             for (Map<String, String> yAxis : yAxisMap) {
                 aggFunctionNames.add(yAxis.get("aggColumnName"));
                 String yAxisColumnName = yAxis.get("columnName");
+                yAxisTableName = yAxis.get("tableName");
                 if (yAxisColumnName != null)
-                    queryBuilder.append(", ").append(yAxisColumnName).append(" AS Y").append(yAxisMap.indexOf(yAxis) + 1);
+                     if (xAxisMap != null && !xAxisMap.isEmpty()) {
+                         queryBuilder.append(", ").append(yAxisColumnName).append(" AS Y").append(yAxisMap.indexOf(yAxis) + 1);
+                     }else {
+                         queryBuilder.append(yAxisColumnName).append(" AS Y").append(yAxisMap.indexOf(yAxis) + 1);
+                     }
                 yAxisColumnNames.add(yAxisColumnName);
             }
         }
 
-        queryBuilder.append(" FROM ").append(xAxisTableName);
+        queryBuilder.append(" FROM ").append(yAxisTableName);
 
         if (filterConditionMap != null && !filterConditionMap.isEmpty()) {
             queryBuilder.append(" WHERE ");
@@ -1036,7 +1040,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 }
             }
         }
-        if ((xAxisTableName).equalsIgnoreCase(conditionTable)) {
+        if ((yAxisTableName).equalsIgnoreCase(conditionTable)) {
             if (conditions != null && !conditions.isEmpty()) {
                 Set<String> keys = conditions.keySet();
                 if (!queryBuilder.toString().contains("WHERE")) {
@@ -1065,14 +1069,18 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
             }
         }
-        queryBuilder.append(!queryBuilder.toString().contains("WHERE") ? " WHERE " : " AND ")
-                .append(xAxisColumnName).append(" IS NOT NULL ");
 
-        if (!yAxisMap.isEmpty()) {
+        if (xAxisMap != null && !xAxisMap.isEmpty()) {
+            queryBuilder.append(!queryBuilder.toString().contains("WHERE") ? " WHERE " : " AND ")
+                    .append(xAxisColumnName).append(" IS NOT NULL ");
+
             queryBuilder.append(" GROUP BY ").append(xAxisColumnName).append(", ");
             queryBuilder.setLength(queryBuilder.length() - 2);
+        }
 
-            queryBuilder.append(" HAVING ");
+
+        if (!yAxisMap.isEmpty()) {
+                 queryBuilder.append(" HAVING ");
 
             for (String yAxis : yAxisColumnNames) {
                 queryBuilder.append(yAxis).append(" IS NOT NULL AND ");

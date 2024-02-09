@@ -11,6 +11,7 @@
 	<groupId>com.pilog.mdm</groupId>
 	<artifactId>Smart-Bi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>jwt-security</name>
 	<description>JWT auth for login and registration</description>
 	<properties>
@@ -35,6 +36,26 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<!--				&lt;!&ndash; avoid: LoggerFactory is not a Logback LoggerContext but Logback is on the classpath. on run with vscode &ndash;&gt;-->
+							<exclusion>
+								<groupId>ch.qos.logback</groupId>
+							<artifactId>logback-classic</artifactId>
+						</exclusion>
+
+				       <exclusion>
+				        <artifactId>tomcat-embed-el</artifactId>
+				            <groupId>org.apache.tomcat.embed</groupId>
+			      </exclusion>
+				        <exclusion>
+			            <artifactId>tomcat-embed-core</artifactId>
+				            <groupId>org.apache.tomcat.embed</groupId>
+				       </exclusion>
+			       <exclusion>
+				           <artifactId>tomcat-embed-websocket</artifactId>
+				         <groupId>org.apache.tomcat.embed</groupId>
+				       </exclusion>
+			</exclusions>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
 		<dependency>
@@ -155,6 +176,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 			<version>6.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

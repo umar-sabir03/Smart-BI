@@ -8,6 +8,5 @@ public class SmartBIApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SmartBIApplication.class, args);
-		System.out.println("jwt-security initiated");
 	}
 }
