@@ -38,10 +38,10 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
 				<!--				&lt;!&ndash; avoid: LoggerFactory is not a Logback LoggerContext but Logback is on the classpath. on run with vscode &ndash;&gt;-->
-							<exclusion>
-								<groupId>ch.qos.logback</groupId>
-							<artifactId>logback-classic</artifactId>
-						</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
 
 				       <exclusion>
 				        <artifactId>tomcat-embed-el</artifactId>
