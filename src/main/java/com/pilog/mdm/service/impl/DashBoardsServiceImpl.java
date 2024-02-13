@@ -874,6 +874,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         String chartType = oRecordVisualisationObj.getChartType();
         String chartProperties = oRecordVisualisationObj.getChartProperties();
         String dbQuery = oRecordVisualisationObj.getDbQuery();
+        String stacked="";
 
         if ((xAxisValue == null || xAxisValue.isEmpty()) && (yAxisValue == null || yAxisValue.isEmpty())) {
             if (dbQuery == null || dbQuery.isEmpty()) {
@@ -881,6 +882,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             } else {
                 if (dbQuery != null && !dbQuery.isEmpty()) {
                     chartCoordinatesByQuery = chartCoordinatesByQuery(dbQuery);
+
                 }
 
             }
@@ -901,11 +903,15 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         chartCoordinates = chartCoordinates(xAxisMap, yAxisMap, filterConditionMap, input);
         if (chartCoordinatesByQuery != null && !chartCoordinatesByQuery.isEmpty()) {
             chartCoordinates.addAll(chartCoordinatesByQuery);
+            if(hasMapWithMoreThanTwoKeys(chartCoordinatesByQuery)){
+                if("bar".equals(chartType) ||"column".equals(chartType) )
+                    stacked="stacked";
+            }
         }
 
         if (chartCoordinates != null && !chartCoordinates.isEmpty()) {
             result.put("chartCoordinates", chartCoordinates);
-            result.put("chartType", chartType);
+            result.put("chartType", stacked+chartType);
             result.put("chartTitle", chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE") == null ? "No Data" : chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE"));
         }
         return result;
@@ -1200,5 +1206,14 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         }
         return resultMap;
     }
+    private  boolean hasMapWithMoreThanTwoKeys(List<Map<String, Object>> list) {
+        for (Map<String, Object> map : list) {
+            if (map.size() > 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
