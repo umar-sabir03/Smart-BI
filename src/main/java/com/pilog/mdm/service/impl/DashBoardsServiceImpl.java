@@ -912,7 +912,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         if (chartCoordinates != null && !chartCoordinates.isEmpty()) {
             result.put("chartCoordinates", chartCoordinates);
             result.put("chartType", stacked+chartType);
-            result.put("chartTitle", chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE") == null ? "No Data" : chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE"));
+            result.put("chartTitle", chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE") == null ? "" : chartPropertiesMap.get(chartType.toUpperCase() + "CHARTTITLE"));
         }
         return result;
     }
@@ -1046,6 +1046,9 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 }
             }
         }
+
+        // Where Condition Start
+
         if ((yAxisTableName).equalsIgnoreCase(conditionTable)) {
             if (conditions != null && !conditions.isEmpty()) {
                 Set<String> keys = conditions.keySet();
@@ -1054,7 +1057,6 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
                 } else {
                     queryBuilder.append(" AND ");
                 }
-
                 for (String key : keys) {
                     String colNamee = key;
                     queryBuilder.append(colNamee);
@@ -1083,6 +1085,9 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             queryBuilder.append(" GROUP BY ").append(xAxisColumnName).append(", ");
             queryBuilder.setLength(queryBuilder.length() - 2);
         }
+
+
+        // Where Condition end
 
 
         if (!yAxisMap.isEmpty()) {

@@ -56,7 +56,7 @@ public class DashBoardsController {
 	@PostMapping("/getDropdownData")
 	public ResponseEntity<Set<String>> fetchChartData(@RequestParam String columnName,@RequestParam String tableName) {
 		Set<String> dropdownData = dashBoardsService.getColumnData(columnName,tableName);
-
+		System.out.println("=============");
 		return new ResponseEntity<>(dropdownData,HttpStatus.OK);
 	}
 

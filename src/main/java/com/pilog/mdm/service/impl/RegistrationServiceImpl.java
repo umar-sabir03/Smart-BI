@@ -115,7 +115,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		sAuth = utils.setMetadata(sAuth, request.getUserName());
 		sAuthId.setPersId(request.getPersId());
 		sAuth.setAuditId("S_AUTHORISATION_"+sPersDetail.getAuditId());
-		String encPassPhrase = passwordEncoder.encode(request.getPassword());
+		String encPassPhrase = passwordEncoder.encode(request.getPassword()+request.getUserName().toUpperCase());
 		sAuthId.setPassPhrase(encPassPhrase);
 		sAuth.setId(sAuthId);
 		sAuth.setSPersDetail(sPersDetail);
