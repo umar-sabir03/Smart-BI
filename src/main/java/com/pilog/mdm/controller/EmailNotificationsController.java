@@ -30,7 +30,8 @@ public class EmailNotificationsController {
 	@GetMapping(value = "/sendOtpToEmail")
 	public ResponseEntity<Map<String,String>> sendOtpToEmail(@Validated @RequestParam("email") String email) {
 		Map<String,String> resp=new HashMap<>();
-			String message = emailService.sendEmail(email);
+		Integer otp = otpGenerator.generateOTP(email);
+		String message = emailService.sendEmail(email,otp);
 			resp.put("message", message);
 			logger.info("Email sent successfully to: {}", email);
 			return new ResponseEntity<>(resp, HttpStatus.OK);

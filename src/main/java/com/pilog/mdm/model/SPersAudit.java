@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "S_Pers_Audit")
 @Data
 public class SPersAudit {
-
-
     @Column(name = "PERS_ID")
     private String persId;
     @Id

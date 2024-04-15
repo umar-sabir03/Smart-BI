@@ -860,6 +860,7 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         return result;
     }
 
+
     private Map<String, Object> getChartData(ORecordVisualisation oRecordVisualisationObj, InputParams input) {
         Map<String, Object> result = new HashMap<>();
         List<Map<String, String>> xAxisMap = new ArrayList<>();
@@ -1218,6 +1219,29 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
             }
         }
         return false;
+    }
+    @Override
+    public Map<String,List<String>> getHomePageFilterData(String chartType) {
+        Map<String,List<String>> tableWithColumns=new LinkedHashMap<>();
+        List<String> filterStrList=new ArrayList<>();
+        List<String> tableList = chartDataRepository.getHomePageFilterData(chartType);
+        for(String tableName:tableList) {
+            List<String> homePageFilterTableColumns = chartDataRepository.getHomePageFilterTableColumns(tableName);
+            tableWithColumns.put(tableName,homePageFilterTableColumns);
+        }
+        String filterColumnStr = chartDataRepository.getHomePageFilterColumn(chartType);
+        if(filterColumnStr!=null){
+            if(filterColumnStr.contains(",")){
+                String[] filterStrArr = filterColumnStr.split(",");
+                for(String filterStr:filterStrArr){
+                    filterStrList.add(filterStr);
+                }
+            }else {
+                filterStrList.add(filterColumnStr);
+            }
+        }
+        tableWithColumns.put("FilterColumns",filterStrList);
+        return tableWithColumns;
     }
 
 

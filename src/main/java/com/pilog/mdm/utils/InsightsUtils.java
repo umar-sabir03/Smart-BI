@@ -2,10 +2,14 @@ package com.pilog.mdm.utils;
 
 import com.pilog.mdm.model.CommonFields;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class InsightsUtils {
 
@@ -42,6 +46,23 @@ public class InsightsUtils {
 		metaData.setEditBy(userName);
 		return metaData;
 	}
+
+	public static String getCurrentUsername() {
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null) {
+			return null;
+		}
+		var userDetails = authentication.getPrincipal();
+		if (userDetails instanceof UserDetails dud) {
+			return dud.getUsername();
+		}
+		return null;
+	}
+	public static String getCurrentDateTime() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+	}
+
 }
 
 //byte test2[] = Base64.getDecoder().decode(imgStr);

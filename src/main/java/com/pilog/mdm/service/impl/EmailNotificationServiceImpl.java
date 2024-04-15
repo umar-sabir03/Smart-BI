@@ -28,9 +28,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
     private final IOtpGenerator otpGenerator;
 
     @Override
-    public String sendEmail(String email) {
+    public String sendEmail(String email,Integer OTP) {
         String result = null;
-        Integer OTP = (otpGenerator.generateOTP(email));
+ //       Integer OTP = (otpGenerator.generateOTP(email));
 
         DalMailConfig mailConfig = getMailConfig();
         Properties prop = configureMailProperties(mailConfig);

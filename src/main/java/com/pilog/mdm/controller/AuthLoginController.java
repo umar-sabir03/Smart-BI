@@ -1,5 +1,8 @@
 package com.pilog.mdm.controller;
 
+import com.pilog.mdm.dto.CreatePasswordResetResponseDto;
+import com.pilog.mdm.dto.EmailResponseDto;
+import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
 import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
 import com.pilog.mdm.requestbody.RegistrationRequest;
@@ -30,14 +33,34 @@ public class AuthLoginController {
 	@PostMapping(value = "/login")
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest loginRequest,
 											  @RequestHeader HttpHeaders headers) {
-			AuthResponse authResponse = loginSer.authenticate(loginRequest,headers);
-			logger.info("User {} successfully logged in", loginRequest.getUsername());
-			return new ResponseEntity<>(authResponse, HttpStatus.OK);
+		AuthResponse authResponse = loginSer.authenticate(loginRequest, headers);
+		logger.info("User {} successfully logged in", loginRequest.getUsername());
+		return new ResponseEntity<>(authResponse, HttpStatus.OK);
 	}
+
 	@PostMapping(value = "/register")
 	public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegistrationRequest request) {
-			AuthResponse authResponse = regSer.registerUser(request);
-			logger.info("User {} successfully registered", request.getUserName());
-			return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+		AuthResponse authResponse = regSer.registerUser(request);
+		logger.info("User {} successfully registered", request.getUserName());
+		return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
+	}
+
+	/**
+	 * @param createPasswordResetRequest
+	 * @return CreatePasswordResetResponseDto
+	 */
+	@PostMapping(path = "/rquest/passwordreset")
+	public CreatePasswordResetResponseDto createPasswordResetRequest() {
+		return loginSer.createPasswordResetRequest();
+	}
+
+	/**
+	 * @param performPasswordResetRequestDto
+	 * @return EmailResponseDto
+	 */
+	@PostMapping(path = "/perform/passwordreset")
+	public EmailResponseDto performPasswordReset(@Valid @RequestBody PerformPasswordResetRequestDto performPasswordResetRequestDto) {
+
+		return loginSer.performPasswordReset(performPasswordResetRequestDto);
 	}
 }

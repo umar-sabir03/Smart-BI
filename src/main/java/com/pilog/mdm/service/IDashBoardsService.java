@@ -15,4 +15,6 @@ public interface IDashBoardsService {
 	List<String> getChartCategoryNames();
 
 	Map<String,Object> getChartDataAndCardData(InputParams ip) ;
+
+	Map<String,List<String>> getHomePageFilterData(String chartType);
 }
