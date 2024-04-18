@@ -62,4 +62,31 @@ public class CustomErrorHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RegistrationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<RestExceptionStatusResponse> handleRegistrationException(RegistrationException regEx) {
+        RestExceptionStatusResponse e = new RestExceptionStatusResponse();
+        e.setStatus(HttpStatus.BAD_REQUEST.value());
+        e.setMessage(regEx.getMessage());
+        return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(InvalidUsernameException.class)
+    public ResponseEntity<RestExceptionStatusResponse> handleInvalidUsernameException(InvalidUsernameException ex) {
+        RestExceptionStatusResponse e = new RestExceptionStatusResponse();
+        e.setStatus(HttpStatus.BAD_REQUEST.value());
+        e.setMessage(ex.getMessage());
+        return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<RestExceptionStatusResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        RestExceptionStatusResponse response = createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    private RestExceptionStatusResponse createErrorResponse(HttpStatus status, String message) {
+        RestExceptionStatusResponse response = new RestExceptionStatusResponse();
+        response.setStatus(status.value());
+        response.setMessage(message);
+        return response;
+    }
 }

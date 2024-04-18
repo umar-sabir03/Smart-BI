@@ -3,6 +3,7 @@ package com.pilog.mdm.controller;
 import com.pilog.mdm.dto.CreatePasswordResetResponseDto;
 import com.pilog.mdm.dto.EmailResponseDto;
 import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
+import com.pilog.mdm.model.UserDeactivation;
 import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
 import com.pilog.mdm.requestbody.RegistrationRequest;
@@ -31,8 +32,15 @@ public class AuthLoginController {
 
 
 	@PostMapping(value = "/login")
-	public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest loginRequest,
+	public ResponseEntity<?> login(@Valid @RequestBody AuthRequest loginRequest,
 											  @RequestHeader HttpHeaders headers) {
+		UserDeactivation user = loginSer.getDeactivatedUser(loginRequest.getUsername());
+		if (user != null && !user.isActive()) {
+				String message = "User is deactivated. Contact administrator to reactivate ";
+				logger.info("User {} is deactivated. Contact administrator to reactivate", loginRequest.getUsername());
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body(message);
+		}
 		AuthResponse authResponse = loginSer.authenticate(loginRequest, headers);
 		logger.info("User {} successfully logged in", loginRequest.getUsername());
 		return new ResponseEntity<>(authResponse, HttpStatus.OK);
@@ -62,5 +70,11 @@ public class AuthLoginController {
 	public EmailResponseDto performPasswordReset(@Valid @RequestBody PerformPasswordResetRequestDto performPasswordResetRequestDto) {
 
 		return loginSer.performPasswordReset(performPasswordResetRequestDto);
+	}
+
+	@PostMapping("/perform/deactivate")
+	public ResponseEntity<String> deactivateUser() {
+		loginSer.deactivateUser();
+		return ResponseEntity.ok("User deactivated successfully");
 	}
 }

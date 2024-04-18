@@ -9,14 +9,8 @@ import com.pilog.mdm.dto.EmailResponseDto;
 import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
 import com.pilog.mdm.exception.*;
 import com.pilog.mdm.exception.enums.ExceptionMessage;
-import com.pilog.mdm.model.PasswdRstRequest;
-import com.pilog.mdm.model.SAuthorisation;
-import com.pilog.mdm.model.SPersAudit;
-import com.pilog.mdm.model.SPersDetail;
-import com.pilog.mdm.repository.PasswdRstRequestRepository;
-import com.pilog.mdm.repository.SAuthorisationRepository;
-import com.pilog.mdm.repository.SPersAuditRepository;
-import com.pilog.mdm.repository.SPersDetailRepository;
+import com.pilog.mdm.model.*;
+import com.pilog.mdm.repository.*;
 import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
 import com.pilog.mdm.service.EmailNotificationService;
@@ -55,6 +49,7 @@ public class LoginServiceImpl implements LoginService {
 	private final PasswdRstRequestRepository passwdRstRequestRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final SAuthorisationRepository sAuthRepo;
+	private final UserDeactivationRepository userDeactivationRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
@@ -174,6 +169,25 @@ public class LoginServiceImpl implements LoginService {
 		EmailResponseDto emailResponseDto = new EmailResponseDto();
 		emailResponseDto.setMessage("The password was reset successfully");
 		return emailResponseDto;
+	}
+
+	@Override
+	public void deactivateUser( ) {
+		String username = InsightsUtils.getCurrentUsername();
+
+		SPersDetail user = sPDRepo.findByUserName(username)
+				.orElseThrow(() -> new NotFoundException(HttpStatus.NOT_FOUND, ExceptionMessage.USER_NOT_FOUND.getMessage(), ExceptionMessage.USER_NOT_FOUND.getErrorCode()));
+
+		UserDeactivation deactivation = new UserDeactivation();
+		deactivation.setUserName(user.getUsername());
+		deactivation.setActive(false);
+		deactivation.setDeactivationDate(LocalDateTime.now());
+
+		userDeactivationRepository.save(deactivation);
+	}
+
+	public UserDeactivation getDeactivatedUser(String username){
+		return userDeactivationRepository.findByUserName(username);
 	}
 
 

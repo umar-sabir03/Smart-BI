@@ -33,13 +33,4 @@ public class PasswdRstRequest {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date updatedAt;
 
-//    public void setIsUsed(Boolean isUsed) {
-//
-//        this.isUsed = isUsed ? 1 : 0;       // Convert Java boolean value to numeric value expected by the database
-//    }
-//
-//    public Boolean getIsUsed() {
-//
-//        return isUsed != null && isUsed == 1;  // Convert numeric value from the database to Java boolean value
-//    }
 }
