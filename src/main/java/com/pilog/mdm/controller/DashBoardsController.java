@@ -60,11 +60,16 @@ public class DashBoardsController {
 		return new ResponseEntity<>(dropdownData,HttpStatus.OK);
 	}
 
-	@PostMapping("/getHomePageFilterData")
-	public ResponseEntity<Map<String,List<String>>> getHomePageFilterData(@RequestBody  String chartType){
+	@PostMapping("/getHomePageFilterOptions")
+	public ResponseEntity<Map<String,List<String>>> getHomePageFilterData(@RequestParam  String chartType){
 		Map<String,List<String>> tableNamesList = dashBoardsService.getHomePageFilterData(chartType);
-
 	  return new ResponseEntity<>(tableNamesList,HttpStatus.OK);
+	}
+
+	@PostMapping("/getHomePageFilterOptionsUpdate")
+	public ResponseEntity<String> getHomePageFilterDataSave(@RequestBody  Map<String,List<String>> inputs  ){
+		String homePageFilterDataSave = dashBoardsService.getHomePageFilterDataSave(inputs);
+		return new ResponseEntity<>(homePageFilterDataSave,HttpStatus.OK);
 	}
 
 }

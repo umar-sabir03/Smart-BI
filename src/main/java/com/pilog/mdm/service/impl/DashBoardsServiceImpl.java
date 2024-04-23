@@ -1244,5 +1244,25 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
         return tableWithColumns;
     }
 
+    @Override
+    public String getHomePageFilterDataSave(Map<String,List<String>> inputs) {
+       StringBuffer columns=new StringBuffer();
+        inputs.forEach((k,v)->{
+            if(!k.equalsIgnoreCase("dashboardName")) {
+                for (String column : v) {
+                    columns.append(k).append(".").append(column).append(",");
+                }
+            }
+        });
+        if (columns.length() > 0) {
+            columns.deleteCharAt(columns.length() - 1);
+        }
+        String dashboardName = inputs.get("dashboardName").get(0);
+        if (dashboardName != null && !dashboardName.isEmpty()) {
+            orecordRepo.updateFilterColumn(columns.toString(), "FILTER", dashboardName);
+        }
+      return "Filter Column Updated Successfully";
+    }
+
 
 }
