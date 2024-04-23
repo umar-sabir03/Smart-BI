@@ -8,6 +8,8 @@ import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
 import org.springframework.http.HttpHeaders;
 
+import java.util.Optional;
+
 
 public interface LoginService {
 
@@ -19,5 +21,5 @@ public interface LoginService {
 	EmailResponseDto performPasswordReset(PerformPasswordResetRequestDto performPasswordResetRequestDto);
 
     void deactivateUser();
-	UserDeactivation getDeactivatedUser(String userName);
+	Optional<UserDeactivation> getDeactivatedUser(String userName);
 }

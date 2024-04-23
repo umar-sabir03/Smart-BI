@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 public class InsightsUtils {
 
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-	public String generateId() {
+	public static String generateId() {
 		return RandomStringUtils.randomAlphanumeric(32).toUpperCase();
 	}
 

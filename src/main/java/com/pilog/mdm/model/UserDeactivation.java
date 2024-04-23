@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 public class UserDeactivation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-
     @Column(name = "userName")
     private String userName;
+
+    @Column(name = "AUDIT_ID",unique = true,nullable = false)
+    private String auditId;
 
     @Column(name = "is_active")
     private boolean isActive;

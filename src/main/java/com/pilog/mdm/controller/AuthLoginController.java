@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -34,13 +35,13 @@ public class AuthLoginController {
 	@PostMapping(value = "/login")
 	public ResponseEntity<?> login(@Valid @RequestBody AuthRequest loginRequest,
 											  @RequestHeader HttpHeaders headers) {
-		UserDeactivation user = loginSer.getDeactivatedUser(loginRequest.getUsername());
-		if (user != null && !user.isActive()) {
-				String message = "User is deactivated. Contact administrator to reactivate ";
-				logger.info("User {} is deactivated. Contact administrator to reactivate", loginRequest.getUsername());
-				return ResponseEntity.status(HttpStatus.FORBIDDEN)
-						.body(message);
+		Optional<UserDeactivation> userDeactivation = loginSer.getDeactivatedUser(loginRequest.getUsername());
+		if (userDeactivation.isPresent() && !userDeactivation.get().isActive()) {
+			String message = "User is deactivated. Please contact the administrator for reactivation.";
+			logger.info("User '{}' is deactivated. Contact administrator for reactivation.", loginRequest.getUsername());
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
 		}
+
 		AuthResponse authResponse = loginSer.authenticate(loginRequest, headers);
 		logger.info("User {} successfully logged in", loginRequest.getUsername());
 		return new ResponseEntity<>(authResponse, HttpStatus.OK);

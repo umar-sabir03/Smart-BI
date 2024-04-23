@@ -180,13 +180,14 @@ public class LoginServiceImpl implements LoginService {
 
 		UserDeactivation deactivation = new UserDeactivation();
 		deactivation.setUserName(user.getUsername());
+		deactivation.setAuditId("USER_DEACTIVE_"+InsightsUtils.generateId());
 		deactivation.setActive(false);
 		deactivation.setDeactivationDate(LocalDateTime.now());
 
 		userDeactivationRepository.save(deactivation);
 	}
 
-	public UserDeactivation getDeactivatedUser(String username){
+	public Optional<UserDeactivation> getDeactivatedUser(String username){
 		return userDeactivationRepository.findByUserName(username);
 	}
 
