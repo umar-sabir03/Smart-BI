@@ -23,9 +23,10 @@ public class RegistrationRequest extends CommonFields {
 	private String lastName;
 	@NotBlank(message = "Username cannot be blank")
 	private String userName;
-	@Pattern(regexp = "^(?=.*[0-9]).{8,}$", message = "Invalid password pattern")
-	@Size(min = 6, message = "Password must be at least 6 characters long")
+	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$", message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and no whitespace, and must be at least 8 characters long.")
+	//  @Size(min = 8, message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and no whitespace, and must be at least 8 characters long.")
 	private String password;
+
 	@NotBlank(message = "Role cannot be blank")
 	private String role;
 
