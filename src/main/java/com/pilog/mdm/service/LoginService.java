@@ -3,6 +3,7 @@ package com.pilog.mdm.service;
 import com.pilog.mdm.dto.CreatePasswordResetResponseDto;
 import com.pilog.mdm.dto.EmailResponseDto;
 import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
+import com.pilog.mdm.dto.PerformPswdResetRequestDto;
 import com.pilog.mdm.model.UserDeactivation;
 import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
@@ -22,4 +23,6 @@ public interface LoginService {
 
     void deactivateUser();
 	Optional<UserDeactivation> getDeactivatedUser(String userName);
+
+	EmailResponseDto performPswdReset(PerformPswdResetRequestDto performPswdResetRequestDto);
 }

@@ -3,6 +3,7 @@ package com.pilog.mdm.controller;
 import com.pilog.mdm.dto.CreatePasswordResetResponseDto;
 import com.pilog.mdm.dto.EmailResponseDto;
 import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
+import com.pilog.mdm.dto.PerformPswdResetRequestDto;
 import com.pilog.mdm.model.UserDeactivation;
 import com.pilog.mdm.requestbody.AuthRequest;
 import com.pilog.mdm.requestbody.AuthResponse;
@@ -71,6 +72,12 @@ public class AuthLoginController {
 	public EmailResponseDto performPasswordReset(@Valid @RequestBody PerformPasswordResetRequestDto performPasswordResetRequestDto) {
 
 		return loginSer.performPasswordReset(performPasswordResetRequestDto);
+	}
+
+	@PostMapping(path = "/perform/pswdreset")
+	public EmailResponseDto performPswdReset(@Valid @RequestBody PerformPswdResetRequestDto performPswdResetRequestDto) {
+
+		return loginSer.performPswdReset(performPswdResetRequestDto);
 	}
 
 	@PostMapping("/perform/deactivate")

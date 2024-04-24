@@ -7,6 +7,7 @@ import com.pilog.mdm.config.JwtService;
 import com.pilog.mdm.dto.CreatePasswordResetResponseDto;
 import com.pilog.mdm.dto.EmailResponseDto;
 import com.pilog.mdm.dto.PerformPasswordResetRequestDto;
+import com.pilog.mdm.dto.PerformPswdResetRequestDto;
 import com.pilog.mdm.exception.*;
 import com.pilog.mdm.exception.enums.ExceptionMessage;
 import com.pilog.mdm.model.*;
@@ -189,6 +190,30 @@ public class LoginServiceImpl implements LoginService {
 
 	public Optional<UserDeactivation> getDeactivatedUser(String username){
 		return userDeactivationRepository.findByUserName(username);
+	}
+
+	@Override
+	public EmailResponseDto performPswdReset(PerformPswdResetRequestDto performPswdResetRequestDto) {
+		String loggedInUserName = InsightsUtils.getCurrentUsername();
+
+		Optional<SPersDetail> user = sPDRepo.findByUserName(loggedInUserName);
+		if (user.isEmpty()) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "PasswdRstRequest userId does not exists", "password.request.not.exist");
+		}
+		if (!passwordEncoder.matches(performPswdResetRequestDto.getOldPassword().strip() + user.get().getUsername().toUpperCase(), user.get().getPassword())) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Incorrect Old Password", "incorrect.old.password");
+		}
+
+		if (performPswdResetRequestDto.getNewPassword().length() > 16) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Password should be less than or equal to 16 characters", "not.equal.16.characters");
+		}
+		SAuthorisation sAuthorisation = user.get().getSAuthorisations().stream().findFirst().orElse(null);
+		if (sAuthorisation != null) {
+			sAuthRepo.updatePassPhrase(sAuthorisation.getSPersDetail().getPersId(), passwordEncoder.encode(performPswdResetRequestDto.getNewPassword().strip() + user.get().getUsername().toUpperCase()));
+		}
+		EmailResponseDto emailResponseDto = new EmailResponseDto();
+		emailResponseDto.setMessage("The password was reset successfully");
+		return emailResponseDto;
 	}
 
 
