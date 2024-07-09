@@ -3,6 +3,7 @@ package com.pilog.mdm.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pilog.mdm.exception.BadRequestException;
 import com.pilog.mdm.model.ORecordVisualisation;
 import com.pilog.mdm.repository.ChartDataRepository;
 import com.pilog.mdm.repository.IDashBoardRepository;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1246,17 +1248,25 @@ public class DashBoardsServiceImpl implements IDashBoardsService {
 
     @Override
     public String getHomePageFilterDataSave(Map<String,List<String>> inputs) {
-       StringBuffer columns=new StringBuffer();
+        if (inputs == null || inputs.isEmpty() || !inputs.containsKey("dashboardName") || inputs.get("dashboardName").isEmpty()) {
+          throw new BadRequestException(HttpStatus.BAD_REQUEST,"invalid inputs","inputs.are.invalid");
+        }
+
+        StringBuffer columns=new StringBuffer();
         inputs.forEach((k,v)->{
             if(!k.equalsIgnoreCase("dashboardName")) {
-                for (String column : v) {
-                    columns.append(k).append(".").append(column).append(",");
+                if(v != null && !v.isEmpty()) {
+                    for (String column : v) {
+                        columns.append(k).append(".").append(column).append(",");
+                    }
                 }
             }
         });
+
         if (columns.length() > 0) {
             columns.deleteCharAt(columns.length() - 1);
         }
+
         String dashboardName = inputs.get("dashboardName").get(0);
         if (dashboardName != null && !dashboardName.isEmpty()) {
             orecordRepo.updateFilterColumn(columns.toString(), "FILTER", dashboardName);
